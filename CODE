@@ -1,0 +1,242 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+
+Using namespace std;
+
+// Transaction class to handle account transactions
+Class Transaction {
+Public:
+    String type;
+    Double amount;
+
+    Transaction(const string &t, double a) : type(t), amount(a) {}
+};
+
+// Account class for customer accounts
+Class Account {
+Private:
+    String accountNumber;
+    Double balance;
+    Vector<Transaction> transactions;
+
+Public:
+    Account(const string &accNumber, double initialBalance = 0.0) : accountNumber(accNumber), balance(initialBalance) {}
+
+    Void deposit(double amount) {
+        Balance += amount;
+        Transactions.push_back(Transaction(“Deposit”, amount));
+        Cout ≪ “Deposit successful. New Balance: $” ≪ balance ≪ endl;
+    }
+
+    Void withdraw(double amount) {
+        If (amount ≤ balance) {
+            Balance -= amount;
+            Transactions.push_back(Transaction(“Withdraw”, amount));
+            Cout ≪ “Withdrawal successful. New Balance: $” ≪ balance ≪ endl;
+        } else {
+            Cout ≪ “Insufficient funds. Withdrawal failed.” ≪ endl;
+        }
+    }
+
+    Void transfer(Account &toAccount, double amount) {
+        If (amount ≤ balance) {
+            Balance -= amount;
+            toAccount.deposit(amount);
+            transactions.push_back(Transaction(“Transfer to “ + toAccount.getAccountNumber(), amount));
+            cout ≪ “Transfer successful. New Balance: $” ≪ balance ≪ endl;
+        } else {
+            Cout ≪ “Insufficient funds. Transfer failed.” ≪ endl;
+        }
+    }
+
+    Void showAccountInfo() const {
+        Cout ≪ “Account Number: “ ≪ accountNumber ≪ endl;
+        Cout ≪ “Current Balance: $” ≪ balance ≪ endl;
+    }
+
+    Void showTransactions() const {
+        Cout ≪ “Recent Transactions:” ≪ endl;
+        For (const auto &transaction : transactions) {
+            Cout ≪ “  “ ≪ transaction.type ≪ “ of $” ≪ fixed ≪ setprecision(2) ≪ transaction.amount ≪ endl;
+        }
+    }
+
+    String getAccountNumber() const {
+        Return accountNumber;
+    }
+
+    Double getBalance() const {
+        Return balance;
+    }
+};
+
+// Customer class for managing customers
+Class Customer {
+Private:
+    String name;
+    String customerId;
+    Account account;
+
+Public:
+    Customer(const string &n, const string &id, const string &accNumber) : name(n), customerId(id), account(accNumber) {}
+
+    Void performDeposit(double amount) {
+        Account.deposit(amount);
+    }
+
+    Void performWithdrawal(double amount) {
+        Account.withdraw(amount);
+    }
+
+    Void performTransfer(Customer &toCustomer, double amount) {
+        Account.transfer(toCustomer.account, amount);
+    }
+
+    Void showAccountDetails() const {
+        Account.showAccountInfo();
+        Account.showTransactions();
+    }
+
+    String getCustomerId() const {
+        Return customerId;
+    }
+};
+
+// BankingService class to manage the overall banking operations
+Class BankingService {
+Private:
+    Vector<Customer> customers;
+
+Public:
+    Void addCustomer(const string &name, const string &customerId, const string &accountNumber) {
+        Customers.emplace_back(name, customerId, accountNumber);
+        Cout ≪ “Customer “ ≪ name ≪ “ with account number “ ≪ accountNumber ≪ “ added successfully.” ≪ endl;
+    }
+
+    Customer* findCustomerById(const string &customerId) {
+        For (auto &customer : customers) {
+            If (customer.getCustomerId() == customerId) {
+                Return &customer;
+            }
+        }
+        Cout ≪ “Customer not found.” ≪ endl;
+        Return nullptr;
+    }
+
+    Void showCustomers() const {
+        Cout ≪ “\nList of Customers:” ≪ endl;
+        For (const auto &customer : customers) {
+            Cout ≪ “  Customer ID: “ ≪ customer.getCustomerId() ≪ endl;
+        }
+    }
+};
+
+Void displayMenu() {
+    Cout ≪ “\nBanking System Menu:” ≪ endl;
+    Cout ≪ “1. Add Customer” ≪ endl;
+    Cout ≪ “2. Deposit” ≪ endl;
+    Cout ≪ “3. Withdraw” ≪ endl;
+    Cout ≪ “4. Transfer” ≪ endl;
+    Cout ≪ “5. Show Account Details” ≪ endl;
+    Cout ≪ “6. Show All Customers” ≪ endl;
+    Cout ≪ “7. Exit” ≪ endl;
+    Cout ≪ “Choose an option: “;
+}
+
+Int main() {
+    BankingService bank;
+    Int choice;
+
+    Do {
+        displayMenu();
+        cin ≫ choice;
+        cin.ignore();  // Clear the newline character left in the input buffer
+
+        switch (choice) {
+            case 1: {
+                string name, customerId, accountNumber;
+                cout ≪ “Enter customer name: “;
+                getline(cin, name);
+                cout ≪ “Enter customer ID: “;
+                getline(cin, customerId);
+                cout ≪ “Enter account number: “;
+                getline(cin, accountNumber);
+
+                bank.addCustomer(name, customerId, accountNumber);
+                break;
+            }
+            Case 2: {
+                String customerId;
+                Double amount;
+                Cout ≪ “Enter customer ID: “;
+                Cin ≫ customerId;
+                Cout ≪ “Enter deposit amount: “;
+                Cin ≫ amount;
+
+                Customer *customer = bank.findCustomerById(customerId);
+                If (customer) {
+                    Customer→performDeposit(amount);
+                }
+                Break;
+            }
+            Case 3: {
+                String customerId;
+                Double amount;
+                Cout ≪ “Enter customer ID: “;
+                Cin ≫ customerId;
+                Cout ≪ “Enter withdrawal amount: “;
+                Cin ≫ amount;
+
+                Customer *customer = bank.findCustomerById(customerId);
+                If (customer) {
+                    Customer→performWithdrawal(amount);
+                }
+                Break;
+            }
+            Case 4: {
+                String fromCustomerId, toCustomerId;
+                Double amount;
+                Cout ≪ “Enter your customer ID: “;
+                Cin ≫ fromCustomerId;
+                Cout ≪ “Enter recipient customer ID: “;
+                Cin ≫ toCustomerId;
+                Cout ≪ “Enter transfer amount: “;
+                Cin ≫ amount;
+
+                Customer *fromCustomer = bank.findCustomerById(fromCustomerId);
+                Customer *toCustomer = bank.findCustomerById(toCustomerId);
+                If (fromCustomer && toCustomer) {
+                    fromCustomer→performTransfer(*toCustomer, amount);
+                }
+                Break;
+            }
+            Case 5: {
+                String customerId;
+                Cout ≪ “Enter customer ID: “;
+                Cin ≫ customerId;
+
+                Customer *customer = bank.findCustomerById(customerId);
+                If (customer) {
+                    Customer→showAccountDetails();
+                }
+                Break;
+            }
+            Case 6: {
+                Bank.showCustomers();
+                Break;
+            }
+            Case 7: {
+                Cout ≪ “Exiting the banking system. Goodbye!” ≪ endl;
+                Break;
+            }
+            Default: {
+                Cout ≪ “Invalid option. Please try again.” ≪ endl;
+                Break;
+            }
+        }
+    } while (choice != 7);
+
+    Return 0;
+}
